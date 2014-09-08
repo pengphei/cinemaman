@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Sep  2 16:17:11 2014
-
-@author: kurain
-"""
 
 # global import
 from xlwt import *
@@ -98,23 +93,3 @@ class CMXlsByDate():
             self.fwsheet.write(self.row_focus, self.col_focus+5, '', unit_style)
             self.row_focus = self.row_focus + 1
         return
-        
-# for test
-if __name__ == "__main__":
-    movie_table = [
-        ['盗马记',	'1',	'13:00',	'14:36',	'1:36',	'粤语'],
-        ['盗马记',	'1',	'15:00',	'16:36',	'1:36',	'粤语'],
-        ['盗马记',	'1',	'17:30',	'19:06',	'1:36',	'粤语'],
-        ['极品飞车3D',	'6',	'13:40',	'15:50',	'2:10',	'英语'],    
-    ]
-    
-    fwbook = Workbook('utf-8')
-    range_sheet = fwbook.add_sheet(u"Sheet1")
-    
-    xls = CMXlsByDate(range_sheet, 0, 0)
-    xls.init(u"菲尔姆国际影城排期表", u"2014-4-1  周二全天观影半价")
-    for movie in movie_table:
-        idx = xls.add_movie(movie[0], movie[1], movie[2], movie[3], movie[4], movie[5])
-    xls.fini()
-    
-    fwbook.save(u"test_礼宾表.xls")

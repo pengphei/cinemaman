@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  3 15:27:50 2014
 
-@author: kurain
-"""
+from CMApp import *
 
-
-
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CMApp(root)
+    root.mainloop()
+    root.destroy()

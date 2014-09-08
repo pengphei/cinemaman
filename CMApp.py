@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  3 15:27:50 2014
-
-@author: kurain
-"""
 
 import Tkinter as tk
 
@@ -14,13 +9,27 @@ def donothing():
 
 # Frame is container for other widgets
 class CMApp(tk.Frame):
+    left_width = 15
+    right_width = 15
+    center_width = 70
+    width = 800
+    height = 600
+    
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.root = master
+        # init ui elemets
         self._init_misc()
         self._init_menu()
-        self._init_left()
-        self._init_center()
+        self._init_left(self.left_width)
+        self._init_right(self.right_width)
+        self._init_calender_list(self.center_width)
+        
+        
+        # init ui data elements
+        self._init_hall_list()
+        self._init_movie_list()
+        self._init_play_list()
         return
 
     def say_hi(self):
@@ -47,16 +56,27 @@ class CMApp(tk.Frame):
         self.fileMenu.add_separator()
 
         self.fileMenu.add_command(label="退出", command=self.root.quit)
+        
         self.menuBar.add_cascade(label="文件", menu=self.fileMenu)
         
         # movie hall cascade
-        self.menuBar.add_cascade(label="电影厅", menu=self.fileMenu)
+        self.hallMenu = tk.Menu(self.menuBar)
+        self.hallMenu.add_command(label="添加", command=donothing)
+        self.hallMenu.add_command(label="删除", command=donothing)
+        self.hallMenu.add_command(label="编辑", command=donothing)
+        self.menuBar.add_cascade(label="电影厅", menu=self.hallMenu)
 
         # movie cascade
-        self.menuBar.add_cascade(label="电影", menu=self.fileMenu)
+        self.movieMenu = tk.Menu(self.menuBar)
+        self.movieMenu.add_command(label="添加", command=donothing)
+        self.movieMenu.add_command(label="删除", command=donothing)
+        self.movieMenu.add_command(label="编辑", command=donothing)
+        self.menuBar.add_cascade(label="电影", menu=self.movieMenu)
 
         # help cascade
-        self.menuBar.add_cascade(label="帮助", menu=self.fileMenu)
+        self.helpMenu = tk.Menu(self.menuBar)
+        self.helpMenu.add_command(label="帮助", command=donothing)
+        self.menuBar.add_cascade(label="帮助", menu=self.helpMenu)
         self.master.config(menu=self.menuBar)
         return
     
@@ -67,38 +87,78 @@ class CMApp(tk.Frame):
         self.pack(fill=tk.BOTH, expand=1)
 
         # centered window
-        w = 800
-        h = 600
         sw = self.root.winfo_screenwidth()
         sh = self.root.winfo_screenheight()
-        x = (sw-w)/2
-        y = (sh-h)/2
-        self.root.geometry('%dx%d+%d+%d' % (w,h,x,y))
+        x = (sw-self.width)/2
+        y = (sh-self.height)/2
+        self.root.geometry('%dx%d+%d+%d' % (self.width,self.height,x,y))
         return
 
-    def _init_left(self):
-        self.hallList = tk.Listbox(self, selectmode=tk.SINGLE, bg='gray')
+    def _init_left(self, w):
+        self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light blue')
+        self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
+        
+        self.hallList = tk.Listbox(self.hallFrame, width=w, selectmode=tk.SINGLE, bg='light blue')
         self.hallList.pack(fill=tk.Y, side=tk.LEFT)
+        return
 
-        # add sample hall
+    def _init_right(self, w):
+        self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light green')
+        self.movieFrame.pack(fill=tk.Y, side=tk.RIGHT)
+        
+        self.movielist = tk.Listbox(self.movieFrame, width=w, selectmode=tk.SINGLE, bg='light green')
+        self.movielist.pack(fill=tk.Y, side=tk.RIGHT)
+        pass
+
+    def _init_calender_list(self, w):
+        self.calenderFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light gray')
+        self.calenderFrame.pack(fill=tk.X, side=tk.TOP)
+        
+        # init center canender list
+        self.calender_list = []
+        
+        # init left arrow
+        self.calender_minus_button = tk.Button(self.calenderFrame, text = '<', fg='red', width=2, height = 5, command=self._calender_minus)
+        self.calender_minus_button.pack(side=tk.LEFT)
+        
+        for i in range(5):
+            button = tk.Button(self.calenderFrame, text="2014-09-08", fg="red", height = 5, command=self.root.quit)
+            button.pack(fill=tk.X, side=tk.LEFT)
+            self.calender_list.append(button)
+            
+        # init right arrow
+        self.calender_plus_button = tk.Button(self.calenderFrame, text = '>', fg='red', width = 2, height = 5, command=self._calender_minus)
+        self.calender_plus_button.pack(side=tk.RIGHT)
+        
+        pass
+    
+    def _init_hall_list(self):
+        # add hall
         self.hallList.insert(0, "一号厅")
         self.hallList.insert(1, "二号厅")
         self.hallList.insert(2, "三号厅")
         self.hallList.insert(3, "四号厅")
         self.hallList.insert(4, "五号厅")
         return
-
-    def _init_right(self):
+    
+    def _init_movie_list(self):
+        # add movie
+        self.movielist.insert(0, "盗马记")
+        self.movielist.insert(1, "极品飞车3D")
+        self.movielist.insert(2, "盟军夺宝队")
+        self.movielist.insert(3, "天才眼镜狗3D")
+        self.movielist.insert(4, "我在路上最爱你")
         pass
-
-    def _init_center(self):
-        self.button = tk.Button(self, text="QUIT", fg="red", command=self.root.quit)
-        self.button.pack(side=tk.LEFT)
-
-        self.hi_there = tk.Button(self, text="Hello", command=self.say_hi)
-        self.hi_there.pack(side=tk.LEFT)
+    
+    def _init_play_list(self):
         pass
-
+    
+    def _calender_minus(self):
+        pass
+    
+    def _calender_plus(self):
+        pass
+        
 
 if __name__ == "__main__":
     root = tk.Tk()

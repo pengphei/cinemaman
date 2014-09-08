@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Sep  2 16:17:11 2014
-
-@author: kurain
-"""
 
 # global import
 from xlwt import *
@@ -141,28 +136,3 @@ class CMXlsByHall():
         self.fwsheet.write_merge(tail_row, tail_row, tail_col+1, tail_col+3, u"默认场间：", bottomcenter_style)
         self.fwsheet.write_merge(tail_row, tail_row, tail_col+4, tail_col+5, self.sleep, bottomright_style)
         return
-
-# for test
-if __name__ == "__main__":
-    fwbook = Workbook('utf-8')
-    range_sheet = fwbook.add_sheet(u"拍片表")
-    
-    hall_unit = CMXlsByHall(range_sheet, 6, 0)
-    hall_unit.init(u"一号厅", 10, u"数字共 8 排60座", u"00:15:00")
-    for ii in range(4):
-        hall_unit.add_movie(u"盗马记",	u"1:36",	u"英", u"13:00",	u"14:36", u"0:24")
-    hall_unit.fini()
-    
-    hall_unit = CMXlsByHall(range_sheet, 6, 7)
-    hall_unit.init(u"二号厅", 10, u"数字共 8 排60座", u"00:15:00")
-    for ii in range(4):
-        hall_unit.add_movie(u"盗马记",	u"1:36",	u"英", u"13:00",	u"14:36", u"0:24")
-    hall_unit.fini()    
-    
-    hall_unit = CMXlsByHall(range_sheet, 6, 14)
-    hall_unit.init(u"三号厅", 10, u"数字共 8 排60座", u"00:15:00")
-    for ii in range(4):
-        hall_unit.add_movie(u"盗马记",	u"1:36",	u"英", u"13:00",	u"14:36", u"0:24")
-    hall_unit.fini()  
-    
-    fwbook.save(u"test_横版排片表.xls")

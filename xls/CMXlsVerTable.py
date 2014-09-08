@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  3 15:27:50 2014
-
-@author: kurain
-"""
 
 # global import
 from xlwt import *
@@ -46,7 +41,7 @@ title_style.borders = unit_border
 title_style.pattern = title_pat
 
 class CMXlsVerTable():
-    
+    """ Vertical Table for generating vertical playing list """
     def __init__(self, wsheet, row, coloumn):
         self.fwsheet = wsheet
         self.row = row
@@ -96,22 +91,3 @@ class CMXlsVerTable():
             self.fwsheet.write(self.row_focus, self.col_focus+3, '', unit_style)
             self.row_focus = self.row_focus + 1
         return
-        
-# for test
-if __name__ == "__main__":
-    fwbook = Workbook('utf-8')
-    range_sheet = fwbook.add_sheet(u"竖版片表")
-    
-    vertable = CMXlsVerTable(range_sheet, 0, 0)
-    vertable.init(u"按片名排序")
-    for ii in range(30):
-        vertable.add_movie()
-    vertable.fini()
-
-    vertable1 = CMXlsVerTable(range_sheet, 0, 5)
-    vertable1.init(u"按时间排序")
-    for ii in range(30):
-        vertable1.add_movie() 
-    vertable1.fini()
-    
-    fwbook.save(u"test_竖版排片表.xls")
