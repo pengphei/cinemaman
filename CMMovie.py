@@ -2,7 +2,7 @@
 
 import sqlite3
 
-class CMMovie:
+class CMMovie(object):
     """电影院电影"""
     id = -1
     name = ""
@@ -16,7 +16,7 @@ class CMMovie:
         self.type = type
         return
 
-class CMDBMovie:
+class CMDBMovie(object):
     """ movie in db """
     def __init__(self):
         self._prepare()

@@ -3,7 +3,7 @@
 import sqlite3
 import os.path
 
-class CMDB:
+class CMDB(object):
     path = ""
     conn = None
     def __init__(self, path):

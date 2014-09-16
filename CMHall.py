@@ -2,7 +2,7 @@
 
 import sqlite3
 
-class CMHall:
+class CMHall(object):
     """ 电影院观赏厅 """
     name = ""
     id = -1
@@ -13,7 +13,7 @@ class CMHall:
         return
 
 
-class CMDBHall:
+class CMDBHall(object):
     """ movie hall in db """
     def __init__(self):
         self._prepare()

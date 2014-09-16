@@ -3,7 +3,7 @@
 import ConfigParser
 import os
 
-class CMConfig:
+class CMConfig(object):
     fcfg = "cmconfig.ini"
     def __init__(self):
         self.config = ConfigParser.ConfigParser()

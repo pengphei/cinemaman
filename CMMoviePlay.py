@@ -2,7 +2,7 @@
 
 import sqlite3
 
-class CMMoviePlay:
+class CMMoviePlay(object):
     """ 电影播放安排 """
     id = -1
     hallID = -1
@@ -18,7 +18,7 @@ class CMMoviePlay:
         self.price = price
         return
 
-class CMDBMoviePlay:
+class CMDBMoviePlay(object):
     """ movie in db """
     def __init__(self):
         self._prepare()

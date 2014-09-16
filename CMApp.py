@@ -2,10 +2,22 @@
 
 import Tkinter as tk
 
+from CMGlobal import *
+from CMConfig import *
+
+## global config
+gCfg = CMConfig()
+
+## global information
+gInfo = CMGlobal()
+gInfo.init()
+
 def donothing():
     filewin = Toplevel(root)
     button = Button(filewin, text="Do nothing button")
     button.pack()
+
+
 
 # Frame is container for other widgets
 class CMApp(tk.Frame):
@@ -21,18 +33,18 @@ class CMApp(tk.Frame):
         # init ui elemets
         self._init_misc()
         self._init_menu()
-        self._init_left(self.left_width)
-        self._init_right(self.right_width)
+        self._init_hall_list(self.left_width)
+        self._init_movie_list(self.right_width)
         self._init_calender_list(self.center_width)
         
         
         # init ui data elements
-        self._init_hall_list()
-        self._init_movie_list()
-        self._init_play_list()
+        self.update_hall_list()
+        self.update_movie_list()
+        self.update_play_list()
         return
 
-    def say_hi(self):
+    def _init_data(self):
         print "hi there, everyone!"
 
         return
@@ -94,7 +106,7 @@ class CMApp(tk.Frame):
         self.root.geometry('%dx%d+%d+%d' % (self.width,self.height,x,y))
         return
 
-    def _init_left(self, w):
+    def _init_hall_list(self, w):
         self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light blue')
         self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
         
@@ -102,7 +114,7 @@ class CMApp(tk.Frame):
         self.hallList.pack(fill=tk.Y, side=tk.LEFT)
         return
 
-    def _init_right(self, w):
+    def _init_movie_list(self, w):
         self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light green')
         self.movieFrame.pack(fill=tk.Y, side=tk.RIGHT)
         
@@ -121,6 +133,9 @@ class CMApp(tk.Frame):
         self.calender_minus_button = tk.Button(self.calenderFrame, text = '<', fg='red', width=2, height = 5, command=self._calender_minus)
         self.calender_minus_button.pack(side=tk.LEFT)
         
+        now = datetime.now()
+        now_day = date(now.year, now.month, now.day)
+        
         for i in range(5):
             button = tk.Button(self.calenderFrame, text="2014-09-08", fg="red", height = 5, command=self.root.quit)
             button.pack(fill=tk.X, side=tk.LEFT)
@@ -130,34 +145,38 @@ class CMApp(tk.Frame):
         self.calender_plus_button = tk.Button(self.calenderFrame, text = '>', fg='red', width = 2, height = 5, command=self._calender_minus)
         self.calender_plus_button.pack(side=tk.RIGHT)
         
-        pass
-    
-    def _init_hall_list(self):
-        # add hall
-        self.hallList.insert(0, "一号厅")
-        self.hallList.insert(1, "二号厅")
-        self.hallList.insert(2, "三号厅")
-        self.hallList.insert(3, "四号厅")
-        self.hallList.insert(4, "五号厅")
+        return
+    def _init_play_list(self):
         return
     
-    def _init_movie_list(self):
+    def update_hall_list(self):
+        # add hall
+        for idx in range(len(gInfo.hall_list)):
+            self.hallList.insert(idx, gInfo.hall_list[idx].name)
+        return
+    
+    def update_movie_list(self):
         # add movie
-        self.movielist.insert(0, "盗马记")
-        self.movielist.insert(1, "极品飞车3D")
-        self.movielist.insert(2, "盟军夺宝队")
-        self.movielist.insert(3, "天才眼镜狗3D")
-        self.movielist.insert(4, "我在路上最爱你")
-        pass
+        for idx in range(len(gInfo.movie_list)):
+            self.movieList.insert(idx, gInfo.movie_list[idx].name)
+        return
     
-    def _init_play_list(self):
-        pass
+    def update_play_list(self):
+        for idx in range(len(gInfo.play_list)):
+            self.playList.insert(idx, gInfo.play_list[idx].name)
+        return
     
+    def update_calender_list(self, date):
+        return
+
+    def update_play_list(self, hall=-1, date=''):
+        return
+
     def _calender_minus(self):
-        pass
-    
+        return
+
     def _calender_plus(self):
-        pass
+        return
         
 
 if __name__ == "__main__":
