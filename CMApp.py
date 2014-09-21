@@ -17,8 +17,6 @@ def donothing():
     button = Button(filewin, text="Do nothing button")
     button.pack()
 
-
-
 # Frame is container for other widgets
 class CMApp(tk.Frame):
     left_width = 15
