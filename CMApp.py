@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import Tkinter as tk
+from threading import Timer
+from datetime import *
 
 from CMGlobal import *
 from CMConfig import *
@@ -33,7 +35,7 @@ class CMApp(tk.Frame):
         self._init_menu()
         self._init_hall_list(self.left_width)
         self._init_movie_list(self.right_width)
-        self._init_calender_list(self.center_width)
+        self._init_week_list(self.center_width)
         
         
         # init ui data elements
@@ -105,7 +107,7 @@ class CMApp(tk.Frame):
         return
 
     def _init_hall_list(self, w):
-        self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light blue')
+        self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light gray')
         self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
         
         self.hallList = tk.Listbox(self.hallFrame, width=w, selectmode=tk.SINGLE, bg='light blue')
@@ -113,37 +115,80 @@ class CMApp(tk.Frame):
         return
 
     def _init_movie_list(self, w):
-        self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light green')
+        self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light gray')
         self.movieFrame.pack(fill=tk.Y, side=tk.RIGHT)
         
         self.movielist = tk.Listbox(self.movieFrame, width=w, selectmode=tk.SINGLE, bg='light green')
         self.movielist.pack(fill=tk.Y, side=tk.RIGHT)
         pass
 
-    def _init_calender_list(self, w):
-        self.calenderFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light gray')
+    def _init_week_list(self, w):
+        self.calenderFrame = tk.LabelFrame(self, width=w, bg='light gray')
         self.calenderFrame.pack(fill=tk.X, side=tk.TOP)
         
-        # init center canender list
-        self.calender_list = []
+        # now objects
+        self.StrVarNow = tk.StringVar()
+        self.StrVarNow.set(gInfo.now.ctime())
+        self.NowFrame = tk.LabelFrame(self.calenderFrame, width=w, bg='light gray')
+        self.NowStateLabel = tk.Label(self.NowFrame, textvariable = self.StrVarNow, fg='blue', bg='light gray')
+        self.NowStateLabel.pack(side=tk.LEFT)
+        self.NowFrame.pack(fill=tk.X, side=tk.TOP)
+        self.NowTimer = Timer(2, self.update_week_now)
+        self.NowTimer.start()
         
-        # init left arrow
-        self.calender_minus_button = tk.Button(self.calenderFrame, text = '<', fg='red', width=2, height = 5, command=self._calender_minus)
-        self.calender_minus_button.pack(side=tk.LEFT)
+        # year objects
+        self.StrVarYear = tk.StringVar()
+        self.StrVarYear.set(str(gInfo.date_focus.year)+ u'年')
+        self.YearFrame = tk.LabelFrame(self.calenderFrame, width=2, bg='light gray')
+        self.YearMinusButton = tk.Button(self.YearFrame, text = '<', fg='green', command=self._year_minus)
+        self.YearMinusButton.pack(side=tk.LEFT)
+        self.YearStateLabel = tk.Label(self.YearFrame, textvariable = self.StrVarYear, fg='green')
+        self.YearStateLabel.pack(side=tk.LEFT)
+        self.YearPlusButton = tk.Button(self.YearFrame, text = '>', fg='green', command=self._year_plus)
+        self.YearPlusButton.pack(side=tk.LEFT)
+        self.YearFrame.pack(fill=tk.X, side=tk.TOP)
+
+        # month objects
+        self.StrVarMonth = tk.StringVar()
+        self.StrVarMonth.set(str(gInfo.date_focus.month) + u'月')
+        self.MonthFrame = tk.LabelFrame(self.calenderFrame, width=2, bg='light gray')
+        self.MonthMinusButton = tk.Button(self.MonthFrame, text = '<', fg='green', command=self._month_minus)
+        self.MonthMinusButton.pack(side=tk.LEFT)
+        self.MonthStateLabel = tk.Label(self.MonthFrame, textvariable = self.StrVarMonth, fg='green')
+        self.MonthStateLabel.pack(side=tk.LEFT)
+        self.MonthPlusButton = tk.Button(self.MonthFrame, text = '>', fg='green', command=self._month_plus)
+        self.MonthPlusButton.pack(side=tk.LEFT)
+        self.MonthFrame.pack(fill=tk.X, side=tk.TOP)
         
-        now = datetime.now()
-        now_day = date(now.year, now.month, now.day)
+        # calendar objects
+        self.WeekButtonsList = []
+        self.WeekStrVarList = []
+        self.WeekFramesList = []
+        self.WeekFrame = tk.LabelFrame(self.calenderFrame, width=2, bg='light gray')
+        self.WeekFrame.pack(fill=tk.X, side=tk.TOP)
+        # days title
+        self.week_titles = [u'星期一', u'星期二', u'星期三', u'星期四', u'星期五', u'星期六', u'星期日']
+        self.WeekTitleFrame = tk.LabelFrame(self.WeekFrame)
+        self.WeekTitleFrame.pack(fill=tk.X, side=tk.TOP)
+
+        for title in self.week_titles:
+            titleButton = tk.Button(self.WeekTitleFrame, text=title, width=5)
+            titleButton.pack(side=tk.LEFT)
         
-        for i in range(5):
-            button = tk.Button(self.calenderFrame, text="2014-09-08", fg="red", height = 5, command=self.root.quit)
-            button.pack(fill=tk.X, side=tk.LEFT)
-            self.calender_list.append(button)
-            
-        # init right arrow
-        self.calender_plus_button = tk.Button(self.calenderFrame, text = '>', fg='red', width = 2, height = 5, command=self._calender_minus)
-        self.calender_plus_button.pack(side=tk.RIGHT)
-        
+        # days index
+        for week_idx in range(6):
+            weekFrame = tk.LabelFrame(self.WeekFrame)
+            weekFrame.pack(fill=tk.X, side=tk.TOP)
+            self.WeekFramesList.append(weekFrame)
+            for day_idx in range(7):
+                dayStrVar = tk.StringVar()
+                dayStrVar.set(gInfo.date_list[week_idx*7 + day_idx].day)
+                dayButton = tk.Button(weekFrame, textvariable = dayStrVar, width=5)
+                dayButton.pack(side=tk.LEFT)
+                self.WeekStrVarList.append(dayStrVar)
+                self.WeekButtonsList.append(dayButton)
         return
+    
     def _init_play_list(self):
         return
     
@@ -163,19 +208,47 @@ class CMApp(tk.Frame):
         for idx in range(len(gInfo.play_list)):
             self.playList.insert(idx, gInfo.play_list[idx].name)
         return
+
+    def update_week_now(self):
+        print('hello world!')
+        gInfo.now = datetime.now()
+        self.StrVarNow.set(gInfo.now.ctime())
+        self.root.update()
+        return
     
-    def update_calender_list(self, date):
+    def update_week_list(self):
+        # update year
+        self.StrVarYear.set(str(gInfo.date_focus.year) + u'年')
+        # update month
+        self.StrVarMonth.set(str(gInfo.date_focus.month) + u'月')
+        # update weeks
+        for idx in range(6*7):
+            self.WeekStrVarList[idx].set(str(gInfo.date_list[idx].day))
+        self.root.update_idletasks()
         return
 
     def update_play_list(self, hall=-1, date=''):
         return
 
-    def _calender_minus(self):
+    def _year_minus(self):
+        gInfo.year_minus()
+        self.update_week_list()
         return
 
-    def _calender_plus(self):
+    def _year_plus(self):
+        gInfo.year_plus()
+        self.update_week_list()
         return
-        
+    
+    def _month_minus(self):
+        gInfo.month_minus()
+        self.update_week_list()
+        return
+    
+    def _month_plus(self):
+        gInfo.month_plus()
+        self.update_week_list()
+        return        
 
 if __name__ == "__main__":
     root = tk.Tk()

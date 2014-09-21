@@ -60,6 +60,32 @@ class CMGlobal(object):
         self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
         return
 
+    def year_minus(self):
+        self.date_focus = date(self.date_focus.year + 1, self.date_focus.month, 1)
+        self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
+        return
+
+    def year_plus(self):
+        self.date_focus = date(self.date_focus.year - 1, self.date_focus.month, 1)
+        self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
+        return
+
+    def month_minus(self):
+        focus_year, focus_month = self.calendar.get_prev_month(self.date_focus.year, self.date_focus.month)
+        self.date_focus = date(focus_year, focus_month, 1)
+        self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
+        return
+
+    def month_plus(self):
+        focus_year, focus_month = self.calendar.get_next_month(self.date_focus.year, self.date_focus.month)
+        self.date_focus = date(focus_year, focus_month, 1)
+        self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
+        return
+
+    def now_update(self):
+        self.now = datetime.now()
+        return
+
     def _fini_db(self):
         """ fini database """
         self.db.fini()
