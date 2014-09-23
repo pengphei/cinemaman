@@ -24,8 +24,8 @@ class CMApp(tk.Frame):
     left_width = 15
     right_width = 15
     center_width = 70
-    width = 800
-    height = 600
+    width = 1000
+    height = 800
     
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
@@ -36,6 +36,7 @@ class CMApp(tk.Frame):
         self._init_hall_list(self.left_width)
         self._init_movie_list(self.right_width)
         self._init_week_list(self.center_width)
+        self._init_play_list(self.center_width)
         
         
         # init ui data elements
@@ -125,11 +126,17 @@ class CMApp(tk.Frame):
     def _init_week_list(self, w):
         self.calenderFrame = tk.LabelFrame(self, width=w, bg='light gray')
         self.calenderFrame.pack(fill=tk.X, side=tk.TOP)
+
+        self.calenderLeftFrame = tk.LabelFrame(self.calenderFrame, width=w/2, bg='light gray')
+        self.calenderLeftFrame.pack(fill=tk.Y, side=tk.LEFT)
+
+        self.calenderRightFrame = tk.LabelFrame(self.calenderFrame, width=w/2, bg='light gray')
+        self.calenderRightFrame.pack(fill=tk.Y, side=tk.LEFT)
         
         # now objects
         self.StrVarNow = tk.StringVar()
         self.StrVarNow.set(gInfo.now.ctime())
-        self.NowFrame = tk.LabelFrame(self.calenderFrame, width=w, bg='light gray')
+        self.NowFrame = tk.LabelFrame(self.calenderLeftFrame, width=w, bg='light gray')
         self.NowStateLabel = tk.Label(self.NowFrame, textvariable = self.StrVarNow, fg='blue', bg='light gray')
         self.NowStateLabel.pack(side=tk.LEFT)
         self.NowFrame.pack(fill=tk.X, side=tk.TOP)
@@ -139,7 +146,7 @@ class CMApp(tk.Frame):
         # year objects
         self.StrVarYear = tk.StringVar()
         self.StrVarYear.set(str(gInfo.date_focus.year)+ u'年')
-        self.YearFrame = tk.LabelFrame(self.calenderFrame, width=2, bg='light gray')
+        self.YearFrame = tk.LabelFrame(self.calenderLeftFrame, width=2, bg='light gray')
         self.YearMinusButton = tk.Button(self.YearFrame, text = '<', fg='green', command=self._year_minus)
         self.YearMinusButton.pack(side=tk.LEFT)
         self.YearStateLabel = tk.Label(self.YearFrame, textvariable = self.StrVarYear, fg='green')
@@ -151,7 +158,7 @@ class CMApp(tk.Frame):
         # month objects
         self.StrVarMonth = tk.StringVar()
         self.StrVarMonth.set(str(gInfo.date_focus.month) + u'月')
-        self.MonthFrame = tk.LabelFrame(self.calenderFrame, width=2, bg='light gray')
+        self.MonthFrame = tk.LabelFrame(self.calenderLeftFrame, width=2, bg='light gray')
         self.MonthMinusButton = tk.Button(self.MonthFrame, text = '<', fg='green', command=self._month_minus)
         self.MonthMinusButton.pack(side=tk.LEFT)
         self.MonthStateLabel = tk.Label(self.MonthFrame, textvariable = self.StrVarMonth, fg='green')
@@ -164,7 +171,7 @@ class CMApp(tk.Frame):
         self.WeekButtonsList = []
         self.WeekStrVarList = []
         self.WeekFramesList = []
-        self.WeekFrame = tk.LabelFrame(self.calenderFrame, width=2, bg='light gray')
+        self.WeekFrame = tk.LabelFrame(self.calenderRightFrame, width=2, bg='light gray')
         self.WeekFrame.pack(fill=tk.X, side=tk.TOP)
         # days title
         self.week_titles = [u'星期一', u'星期二', u'星期三', u'星期四', u'星期五', u'星期六', u'星期日']
@@ -189,7 +196,9 @@ class CMApp(tk.Frame):
                 self.WeekButtonsList.append(dayButton)
         return
     
-    def _init_play_list(self):
+    def _init_play_list(self, w):
+        self.PlayFrame = tk.LabelFrame(self, width=2, bg='light blue')
+        self.PlayFrame.pack(fill=tk.X, side=tk.TOP)
         return
     
     def update_hall_list(self):
