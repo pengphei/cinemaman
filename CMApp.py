@@ -6,6 +6,11 @@ from datetime import *
 
 from CMGlobal import *
 from CMConfig import *
+from CMUtil import *
+
+# dialog import
+from ui.MovieDialog import *
+from ui.HallDialog import *
 
 ## global config
 gCfg = CMConfig()
@@ -13,11 +18,6 @@ gCfg = CMConfig()
 ## global information
 gInfo = CMGlobal()
 gInfo.init()
-
-def donothing():
-    filewin = Toplevel(root)
-    button = Button(filewin, text="Do nothing button")
-    button.pack()
 
 # Frame is container for other widgets
 class CMApp(tk.Frame):
@@ -27,17 +27,16 @@ class CMApp(tk.Frame):
     width = 1000
     height = 800
     
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
-        self.root = master
+    def __init__(self, root=None):
+        tk.Frame.__init__(self, root)
+        self.root = root
         # init ui elemets
         self._init_misc()
-        self._init_menu()
+        #self._init_menu()
         self._init_hall_list(self.left_width)
         self._init_movie_list(self.right_width)
         self._init_week_list(self.center_width)
         self._init_play_list(self.center_width)
-        
         
         # init ui data elements
         self.update_hall_list()
@@ -60,11 +59,11 @@ class CMApp(tk.Frame):
 
         # file cascade
         self.fileMenu = tk.Menu(self.menuBar)
-        self.fileMenu.add_command(label="新建", command=donothing)
-        self.fileMenu.add_command(label="打开", command=donothing)
-        self.fileMenu.add_command(label="保存", command=donothing)
-        self.fileMenu.add_command(label="另存为...", command=donothing)
-        self.fileMenu.add_command(label="关闭", command=donothing)
+        self.fileMenu.add_command(label="新建", command=self._menu_click)
+        self.fileMenu.add_command(label="打开", command=self._menu_click)
+        self.fileMenu.add_command(label="保存", command=self._menu_click)
+        self.fileMenu.add_command(label="另存为...", command=self._menu_click)
+        self.fileMenu.add_command(label="关闭", command=self._menu_click)
 
         self.fileMenu.add_separator()
 
@@ -74,53 +73,72 @@ class CMApp(tk.Frame):
         
         # movie hall cascade
         self.hallMenu = tk.Menu(self.menuBar)
-        self.hallMenu.add_command(label="添加", command=donothing)
-        self.hallMenu.add_command(label="删除", command=donothing)
-        self.hallMenu.add_command(label="编辑", command=donothing)
+        self.hallMenu.add_command(label="添加", command=self._menu_click)
+        self.hallMenu.add_command(label="删除", command=self._menu_click)
+        self.hallMenu.add_command(label="编辑", command=self._menu_click)
         self.menuBar.add_cascade(label="电影厅", menu=self.hallMenu)
 
         # movie cascade
         self.movieMenu = tk.Menu(self.menuBar)
-        self.movieMenu.add_command(label="添加", command=donothing)
-        self.movieMenu.add_command(label="删除", command=donothing)
-        self.movieMenu.add_command(label="编辑", command=donothing)
+        self.movieMenu.add_command(label="添加", command=self._menu_click)
+        self.movieMenu.add_command(label="删除", command=self._menu_click)
+        self.movieMenu.add_command(label="编辑", command=self._menu_click)
         self.menuBar.add_cascade(label="电影", menu=self.movieMenu)
 
         # help cascade
         self.helpMenu = tk.Menu(self.menuBar)
-        self.helpMenu.add_command(label="帮助", command=donothing)
+        self.helpMenu.add_command(label="帮助", command=self._menu_click)
         self.menuBar.add_cascade(label="帮助", menu=self.helpMenu)
         self.master.config(menu=self.menuBar)
         return
     
     def _init_misc(self):
         # title
-        self.root.title('cineman')
+        self.root.title(u'电影院管理')
         # pack
         self.pack(fill=tk.BOTH, expand=1)
 
         # centered window
-        sw = self.root.winfo_screenwidth()
-        sh = self.root.winfo_screenheight()
-        x = (sw-self.width)/2
-        y = (sh-self.height)/2
-        self.root.geometry('%dx%d+%d+%d' % (self.width,self.height,x,y))
+        util_center_win(self)
         return
 
     def _init_hall_list(self, w):
         self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light gray')
         self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
+
+        self.hallTitle = tk.Label(self.hallFrame, text = u"电影厅列表", width=w, bg='light gray')
+        self.hallTitle.pack(fill=tk.Y, side=tk.TOP)
         
         self.hallList = tk.Listbox(self.hallFrame, width=w, selectmode=tk.SINGLE, bg='light blue')
-        self.hallList.pack(fill=tk.Y, side=tk.LEFT)
+        self.hallList.pack(fill=tk.BOTH, side=tk.TOP)
+
+        self.hallToolsFrame = tk.LabelFrame(self.hallFrame, width=w, bg='light gray')
+        self.hallToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
+        self.hallToolAdd = tk.Button(self.hallToolsFrame, text = '添加', command=self._hall_add)
+        self.hallToolAdd.pack(fill=tk.Y, side=tk.LEFT)
+        self.hallToolDel = tk.Button(self.hallToolsFrame, text = '删除', command=self._hall_del)
+        self.hallToolDel.pack(fill=tk.Y, side=tk.LEFT)
+        self.hallToolEdit = tk.Button(self.hallToolsFrame, text = '编辑', command=self._hall_edit)
+        self.hallToolEdit.pack(fill=tk.Y, side=tk.LEFT)
         return
 
     def _init_movie_list(self, w):
         self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light gray')
         self.movieFrame.pack(fill=tk.Y, side=tk.RIGHT)
-        
+
+        self.movieTitle = tk.Label(self.movieFrame, text = u"电影列表", width=w, bg='light gray')
+        self.movieTitle.pack(fill=tk.Y, side=tk.TOP)
         self.movielist = tk.Listbox(self.movieFrame, width=w, selectmode=tk.SINGLE, bg='light green')
-        self.movielist.pack(fill=tk.Y, side=tk.RIGHT)
+        self.movielist.pack(fill=tk.BOTH, side=tk.TOP)
+
+        self.movieToolsFrame = tk.LabelFrame(self.movieFrame, width=w, bg='light gray')
+        self.movieToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
+        self.movieToolAdd = tk.Button(self.movieToolsFrame, text = '添加', command=self._movie_add)
+        self.movieToolAdd.pack(fill=tk.Y, side=tk.LEFT)
+        self.movieToolDel = tk.Button(self.movieToolsFrame, text = '删除', command=self._movie_del)
+        self.movieToolDel.pack(fill=tk.Y, side=tk.LEFT)
+        self.movieToolEdit = tk.Button(self.movieToolsFrame, text = '编辑', command=self._movie_edit)
+        self.movieToolEdit.pack(fill=tk.Y, side=tk.LEFT)
         pass
 
     def _init_week_list(self, w):
@@ -190,15 +208,15 @@ class CMApp(tk.Frame):
             for day_idx in range(7):
                 dayStrVar = tk.StringVar()
                 dayStrVar.set(gInfo.date_list[week_idx*7 + day_idx].day)
-                dayButton = tk.Button(weekFrame, textvariable = dayStrVar, width=5)
+                dayButton = tk.Button(weekFrame, textvariable = dayStrVar, width=5, command=self._day_click)
                 dayButton.pack(side=tk.LEFT)
                 self.WeekStrVarList.append(dayStrVar)
                 self.WeekButtonsList.append(dayButton)
         return
     
     def _init_play_list(self, w):
-        self.PlayFrame = tk.LabelFrame(self, width=2, bg='light blue')
-        self.PlayFrame.pack(fill=tk.X, side=tk.TOP)
+        self.PlayFrame = tk.LabelFrame(self, width=w, bg='light blue')
+        self.PlayFrame.pack(fill=tk.BOTH, side=tk.TOP)
         return
     
     def update_hall_list(self):
@@ -239,6 +257,51 @@ class CMApp(tk.Frame):
     def update_play_list(self, hall=-1, date=''):
         return
 
+    def _menu_click(self):
+        return
+
+    def _movie_add(self):
+        dialog = MovieDialog(self.root)
+        dialog.open_add(gInfo)
+        return
+
+    def _movie_del(self):
+        dialog = MovieDialog(self.root)
+        dialog.open_del(gInfo)
+        return
+
+    def _movie_edit(self):
+        dialog = MovieDialog(self.root)
+        dialog.open_edit(gInfo)
+        return
+
+    def _play_add(self):
+        return
+
+    def _play_del(self):
+        return
+
+    def _play_edit(self):
+        return
+
+    def _hall_add(self):
+        dialog = HallDialog(self.root)
+        dialog.open_add(gInfo)
+        return
+
+    def _hall_del(self):
+        dialog = HallDialog(self.root)
+        dialog.open_del(gInfo)
+        return
+
+    def _hall_edit(self):
+        dialog = HallDialog(self.root)
+        dialog.open_edit(gInfo)
+        return
+
+    def _day_click(self):
+        return
+
     def _year_minus(self):
         gInfo.year_minus()
         self.update_week_list()
@@ -257,7 +320,7 @@ class CMApp(tk.Frame):
     def _month_plus(self):
         gInfo.month_plus()
         self.update_week_list()
-        return        
+        return    
 
 if __name__ == "__main__":
     root = tk.Tk()
