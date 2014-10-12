@@ -4,18 +4,16 @@ import sqlite3
 
 class CMMoviePlay(object):
     """ 电影播放安排 """
-    id = -1
-    hallID = -1
-    movieID = -1
-    startTime = ""
-    endTime = ""
-    price = -1
-    def __init__(self, hallID, movieID, startTime, endTime, price):
+    def __init__(self, idx = -1, hallID=-1, movieID=-1, startTime="", endTime="", price=0):
+        self.id = idx
         self.hallID = hallID
         self.movieID = movieID
         self.startTime = startTime
         self.endTime = endTime
         self.price = price
+
+        self.hallName = ""
+        self.movieName = ""
         return
 
 class CMDBMoviePlay(object):
@@ -53,7 +51,7 @@ class CMDBMoviePlay(object):
         cursor = conn.cursor()
         cursor.execute(self.CMD_ALL)
         for item in cursor.fetchall():
-            play = CMMoviePlay(item[1], item[2], item[3], item[4], item[5])
+            play = CMMoviePlay(-1, item[1], item[2], item[3], item[4], item[5])
             play.id = item[0]
             list.append(play)
         return list

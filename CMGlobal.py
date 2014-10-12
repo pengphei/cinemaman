@@ -92,5 +92,8 @@ class CMGlobal(object):
     def _fini_db(self):
         """ fini database """
         self.db.fini()
-        
-        
+
+## global information
+gInfo = CMGlobal()
+gInfo.init()
+
