@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import *
+import datetime
 from CMDB import *
 from CMHall import *
 from CMMovie import *
@@ -50,40 +50,43 @@ class CMGlobal(object):
         self.movie_list = self.db_movie.all(self.db.conn)
         self.play_list = self.db_play.all(self.db.conn)
         self.hall_list = self.db_hall.all(self.db.conn)
+        self.movie_focus = -1
+        self.play_focus = -1
+        self.hall_focus = -1
         return
     
     def _init_date(self):
         """ init date referrent information """
         self.calendar = CMCalendar()
-        self.now = datetime.now()
-        self.date_focus = date(self.now.year, self.now.month, self.now.day)
+        self.now = datetime.datetime.now()
+        self.date_focus = datetime.date(self.now.year, self.now.month, self.now.day)
         self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
         return
 
     def year_minus(self):
-        self.date_focus = date(self.date_focus.year + 1, self.date_focus.month, 1)
+        self.date_focus = datetime.date(self.date_focus.year + 1, self.date_focus.month, 1)
         self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
         return
 
     def year_plus(self):
-        self.date_focus = date(self.date_focus.year - 1, self.date_focus.month, 1)
+        self.date_focus = datetime.date(self.date_focus.year - 1, self.date_focus.month, 1)
         self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
         return
 
     def month_minus(self):
         focus_year, focus_month = self.calendar.get_prev_month(self.date_focus.year, self.date_focus.month)
-        self.date_focus = date(focus_year, focus_month, 1)
+        self.date_focus = datetime.date(focus_year, focus_month, 1)
         self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
         return
 
     def month_plus(self):
         focus_year, focus_month = self.calendar.get_next_month(self.date_focus.year, self.date_focus.month)
-        self.date_focus = date(focus_year, focus_month, 1)
+        self.date_focus = datetime.date(focus_year, focus_month, 1)
         self.date_list = self.calendar.make_dates_list_align(self.date_focus.year, self.date_focus.month)
         return
 
     def now_update(self):
-        self.now = datetime.now()
+        self.now = datetime.datetime.now()
         return
 
     def _fini_db(self):

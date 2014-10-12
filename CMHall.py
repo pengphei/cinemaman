@@ -4,10 +4,8 @@ import sqlite3
 
 class CMHall(object):
     """ 电影院观赏厅 """
-    name = ""
-    id = -1
-    info = ""
-    def __init__(self, name, info):
+    def __init__(self, idx=-1, name='', info=""):
+        self.idx = idx
         self.name = name
         self.info = info
         return
@@ -44,14 +42,14 @@ class CMDBHall(object):
         return
 
     def all(self, conn):
-        list = []
+        halls = []
         cursor = conn.cursor()
         cursor.execute(self.CMD_ALL)
         for item in cursor.fetchall():
-            hall = CMHall(item[1], item[2])
+            hall = CMHall(-1, item[1], item[2])
             hall.id = item[0]
-            list.append(hall)
-        return list
+            halls.append(hall)
+        return halls
 
     def clear(self, conn):
         pass

@@ -2,7 +2,7 @@
 
 import traceback
 import calendar
-from datetime import *
+import datetime
 
 class CMCalendar(object):
     """ for calendar management """
@@ -43,7 +43,7 @@ class CMCalendar(object):
         for week in pre_weeks:
             week_days = week.split()
             for day in week_days:
-                date_list.append(date(year, month, int(day)))
+                date_list.append(datetime.date(year, month, int(day)))
             
         return date_list
 

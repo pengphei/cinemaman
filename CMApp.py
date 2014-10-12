@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import Tkinter as tk
-from threading import Timer
-from datetime import *
+import datetime
+import time
+import thread
 
 from CMGlobal import *
 from CMConfig import *
@@ -31,24 +32,23 @@ class CMApp(tk.Frame):
         tk.Frame.__init__(self, root)
         self.root = root
         # init ui elemets
-        self._init_misc()
-        #self._init_menu()
-        self._init_hall_list(self.left_width)
-        self._init_movie_list(self.right_width)
-        self._init_week_list(self.center_width)
-        self._init_play_list(self.center_width)
+        self.misc_init()
+        #self.menu_init()
+        self.hall_list_init(self.left_width)
+        self.movie_list_init(self.right_width)
+        self.week_list_init(self.center_width)
+        self.play_list_init(self.center_width)
         
         # init ui data elements
-        self.update_hall_list()
-        self.update_movie_list()
-        self.update_play_list()
+        self.hall_list_update()
+        self.movie_list_update()
+        self.play_list_update()
         return
 
     def _init_data(self):
-        print "hi there, everyone!"
-
         return
-    def _init_menu(self):
+    
+    def menu_init(self):
         # Menu widget which displays a list of choice of MenuButton
         # choises includes:
         #   simple command
@@ -92,56 +92,19 @@ class CMApp(tk.Frame):
         self.master.config(menu=self.menuBar)
         return
     
-    def _init_misc(self):
+    def _menu_click(self):
+        return
+    
+    def misc_init(self):
         # title
         self.root.title(u'电影院管理')
         # pack
         self.pack(fill=tk.BOTH, expand=1)
-
         # centered window
         util_center_win(self)
         return
 
-    def _init_hall_list(self, w):
-        self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light gray')
-        self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
-
-        self.hallTitle = tk.Label(self.hallFrame, text = u"电影厅列表", width=w, bg='light gray')
-        self.hallTitle.pack(fill=tk.Y, side=tk.TOP)
-        
-        self.hallList = tk.Listbox(self.hallFrame, width=w, selectmode=tk.SINGLE, bg='light blue')
-        self.hallList.pack(fill=tk.BOTH, side=tk.TOP)
-
-        self.hallToolsFrame = tk.LabelFrame(self.hallFrame, width=w, bg='light gray')
-        self.hallToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
-        self.hallToolAdd = tk.Button(self.hallToolsFrame, text = '添加', command=self._hall_add)
-        self.hallToolAdd.pack(fill=tk.Y, side=tk.LEFT)
-        self.hallToolDel = tk.Button(self.hallToolsFrame, text = '删除', command=self._hall_del)
-        self.hallToolDel.pack(fill=tk.Y, side=tk.LEFT)
-        self.hallToolEdit = tk.Button(self.hallToolsFrame, text = '编辑', command=self._hall_edit)
-        self.hallToolEdit.pack(fill=tk.Y, side=tk.LEFT)
-        return
-
-    def _init_movie_list(self, w):
-        self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light gray')
-        self.movieFrame.pack(fill=tk.Y, side=tk.RIGHT)
-
-        self.movieTitle = tk.Label(self.movieFrame, text = u"电影列表", width=w, bg='light gray')
-        self.movieTitle.pack(fill=tk.Y, side=tk.TOP)
-        self.movielist = tk.Listbox(self.movieFrame, width=w, selectmode=tk.SINGLE, bg='light green')
-        self.movielist.pack(fill=tk.BOTH, side=tk.TOP)
-
-        self.movieToolsFrame = tk.LabelFrame(self.movieFrame, width=w, bg='light gray')
-        self.movieToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
-        self.movieToolAdd = tk.Button(self.movieToolsFrame, text = '添加', command=self._movie_add)
-        self.movieToolAdd.pack(fill=tk.Y, side=tk.LEFT)
-        self.movieToolDel = tk.Button(self.movieToolsFrame, text = '删除', command=self._movie_del)
-        self.movieToolDel.pack(fill=tk.Y, side=tk.LEFT)
-        self.movieToolEdit = tk.Button(self.movieToolsFrame, text = '编辑', command=self._movie_edit)
-        self.movieToolEdit.pack(fill=tk.Y, side=tk.LEFT)
-        pass
-
-    def _init_week_list(self, w):
+    def week_list_init(self, w):
         self.calenderFrame = tk.LabelFrame(self, width=w, bg='light gray')
         self.calenderFrame.pack(fill=tk.X, side=tk.TOP)
 
@@ -158,8 +121,6 @@ class CMApp(tk.Frame):
         self.NowStateLabel = tk.Label(self.NowFrame, textvariable = self.StrVarNow, fg='blue', bg='light gray')
         self.NowStateLabel.pack(side=tk.LEFT)
         self.NowFrame.pack(fill=tk.X, side=tk.TOP)
-        self.NowTimer = Timer(2, self.update_week_now)
-        self.NowTimer.start()
         
         # year objects
         self.StrVarYear = tk.StringVar()
@@ -212,38 +173,11 @@ class CMApp(tk.Frame):
                 dayButton.pack(side=tk.LEFT)
                 self.WeekStrVarList.append(dayStrVar)
                 self.WeekButtonsList.append(dayButton)
-        return
-    
-    def _init_play_list(self, w):
-        self.PlayFrame = tk.LabelFrame(self, width=w, bg='light blue')
-        self.PlayFrame.pack(fill=tk.BOTH, side=tk.TOP)
-        return
-    
-    def update_hall_list(self):
-        # add hall
-        for idx in range(len(gInfo.hall_list)):
-            self.hallList.insert(idx, gInfo.hall_list[idx].name)
-        return
-    
-    def update_movie_list(self):
-        # add movie
-        for idx in range(len(gInfo.movie_list)):
-            self.movieList.insert(idx, gInfo.movie_list[idx].name)
-        return
-    
-    def update_play_list(self):
-        for idx in range(len(gInfo.play_list)):
-            self.playList.insert(idx, gInfo.play_list[idx].name)
+
+        self.week_now_update()
         return
 
-    def update_week_now(self):
-        print('hello world!')
-        gInfo.now = datetime.now()
-        self.StrVarNow.set(gInfo.now.ctime())
-        self.root.update()
-        return
-    
-    def update_week_list(self):
+    def week_list_update(self):
         # update year
         self.StrVarYear.set(str(gInfo.date_focus.year) + u'年')
         # update month
@@ -251,52 +185,254 @@ class CMApp(tk.Frame):
         # update weeks
         for idx in range(6*7):
             self.WeekStrVarList[idx].set(str(gInfo.date_list[idx].day))
+            
         self.root.update_idletasks()
         return
+    
+    def week_now_update(self):
+        print('update week now!')
+        gInfo.now = datetime.datetime.now()
+        self.StrVarNow.set(gInfo.now.ctime())
+        self.root.update_idletasks()
+        self.after(1000, self.week_now_update)
+        return
+    
+    def movie_list_init(self, w):
+        self.movieStrVar = tk.StringVar()
+        self.movieFrame = tk.LabelFrame(self, width=w, borderwidth=2, bg='light gray')
+        self.movieFrame.pack(fill=tk.Y, side=tk.RIGHT)
 
-    def update_play_list(self, hall=-1, date=''):
+        self.movieTitle = tk.Label(self.movieFrame, text = u"电影列表", width=w, bg='light gray')
+        self.movieTitle.pack(fill=tk.Y, side=tk.TOP)
+        self.movieList = tk.Listbox(self.movieFrame, width=w, listvariable=self.movieStrVar, selectmode=tk.SINGLE, bg='light green')
+        self.movieList.pack(fill=tk.BOTH, side=tk.TOP)
+
+        # movie list key bindings
+        self.movieList.bind('<ButtonRelease-1>', self.movie_single_click)
+        self.movieList.bind('<Double-ButtonRelease-1>', self.movie_double_click)
+
+        self.movieToolsFrame = tk.LabelFrame(self.movieFrame, width=w, bg='light gray')
+        self.movieToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
+        self.movieToolAdd = tk.Button(self.movieToolsFrame, text = '添加', command=self.movie_add)
+        self.movieToolAdd.pack(fill=tk.Y, side=tk.LEFT)
+        self.movieToolDel = tk.Button(self.movieToolsFrame, text = '删除', command=self.movie_del)
+        self.movieToolDel.pack(fill=tk.Y, side=tk.LEFT)
+        self.movieToolEdit = tk.Button(self.movieToolsFrame, text = '编辑', command=self.movie_edit)
+        self.movieToolEdit.pack(fill=tk.Y, side=tk.LEFT)
+        pass
+
+    def movie_list_update(self):
+        # add movie
+        movies = []
+        for idx in range(len(gInfo.movie_list)):
+            movies.append(gInfo.movie_list[idx].name)
+        self.movieStrVar.set(tuple(movies))
+        return
+    
+    def movie_single_click(self, event):
+        idxs = self.movieList.curselection()
+        if(len(idxs) == 0):
+            return
+        gInfo.movie_focus = idxs[0]
+        self.focus_movie = gInfo.movie_list[gInfo.movie_focus]
+        print("movie single click")
+        print(self.focus_movie.name)
         return
 
-    def _menu_click(self):
+    def movie_double_click(self, event):
+        idxs = self.movieList.curselection()
+        if(len(idxs) == 0):
+            return
+        gInfo.movie_focus = idxs[0]
+        self.focus_movie = gInfo.movie_list[gInfo.movie_focus]
+        print("mocie double click")
+        print(self.focus_movie.name)
+        self.movie_edit()
         return
-
-    def _movie_add(self):
+    
+    def movie_add(self):
         dialog = MovieDialog(self.root)
-        dialog.open_add(gInfo)
+        dialog.open_add(self)
         return
 
-    def _movie_del(self):
+    def movie_del(self):
+        if(len(gInfo.movie_list) == 0 or gInfo.movie_focus == -1):
+            return
+        
         dialog = MovieDialog(self.root)
-        dialog.open_del(gInfo)
+        dialog.open_del(self, self.focus_movie.name)
         return
 
-    def _movie_edit(self):
+    def movie_edit(self):
+        if(len(gInfo.movie_list) == 0 or gInfo.movie_focus == -1):
+            return
+        
         dialog = MovieDialog(self.root)
-        dialog.open_edit(gInfo)
+        dialog.open_edit(self)
         return
 
-    def _play_add(self):
+    def movie_add_confirm(self, movie):
+        movie.id = gInfo.db_movie.add(gInfo.db.conn, movie)
+        gInfo.movie_list.append(movie);
+        self.movie_list_update()
         return
 
-    def _play_del(self):
+    def movie_edit_confirm(self, movie):
+        if(len(gInfo.movie_list) == 0 or gInfo.movie_focus == -1):
+            return
+        
+        movie_old = gInfo.movie_list[gInfo.movie_focus]
+        movie.id = movie_old.id
+        gInfo.db_movie.edit(gInfo.db.conn, movie)
+        gInfo.movie_list[gInfo.movie_focus] = movie
+        self.movie_list_update()
         return
 
-    def _play_edit(self):
+    def movie_del_confirm(self):
+        if(len(gInfo.movie_list) == 0 or gInfo.movie_focus == -1):
+            return
+        
+        movie_del = gInfo.movie_list[gInfo.movie_focus]
+        gInfo.db_movie.delete(gInfo.db.conn, movie_del)
+        gInfo.movie_list.pop(gInfo.movie_focus)
+
+        last = len(gInfo.movie_list) - 1
+        
+        if(gInfo.movie_focus > last):
+            gInfo.movie_focus = last
+        self.movie_list_update()
+        return
+    
+    def play_list_init(self, w):
+        self.PlayFrame = tk.LabelFrame(self, width=w, bg='light blue')
+        self.PlayFrame.pack(fill=tk.BOTH, side=tk.TOP)
+        return
+    
+    def play_list_update(self):
+        for idx in range(len(gInfo.play_list)):
+            self.playList.insert(idx, gInfo.play_list[idx].name)
+        return
+    
+    def play_add(self):
         return
 
-    def _hall_add(self):
+    def play_del(self):
+        return
+
+    def play_edit(self):
+        return
+
+    def play_add_confirm(self, play):
+        return
+    def play_edit_confirm(self, play):
+        return
+    def play_del_confirm(self, play):
+        return
+    
+    def hall_list_init(self, w):
+        self.hallStrVar = tk.StringVar()
+        self.hallFrame = tk.LabelFrame(self, width = w, borderwidth = 2, bg='light gray')
+        self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
+
+        self.hallTitle = tk.Label(self.hallFrame, text = u"电影厅列表", width=w, bg='light gray')
+        self.hallTitle.pack(fill=tk.Y, side=tk.TOP)
+        
+        self.hallList = tk.Listbox(self.hallFrame, width=w, listvariable=self.hallStrVar, selectmode=tk.SINGLE, bg='light blue')
+        self.hallList.pack(fill=tk.BOTH, side=tk.TOP)
+
+        # hall list key bindings
+        self.hallList.bind('<ButtonRelease-1>', self.hall_single_click)
+        self.hallList.bind('<Double-ButtonRelease-1>', self.hall_double_click)
+        
+        self.hallToolsFrame = tk.LabelFrame(self.hallFrame, width=w, bg='light gray')
+        self.hallToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
+        self.hallToolAdd = tk.Button(self.hallToolsFrame, text = '添加', command=self.hall_add)
+        self.hallToolAdd.pack(fill=tk.Y, side=tk.LEFT)
+        self.hallToolDel = tk.Button(self.hallToolsFrame, text = '删除', command=self.hall_del)
+        self.hallToolDel.pack(fill=tk.Y, side=tk.LEFT)
+        self.hallToolEdit = tk.Button(self.hallToolsFrame, text = '编辑', command=self.hall_edit)
+        self.hallToolEdit.pack(fill=tk.Y, side=tk.LEFT)
+        return
+
+    def hall_list_update(self):
+        halls = []
+        # add hall
+        for hall in gInfo.hall_list:
+            halls.append(hall.name)
+        self.hallStrVar.set(tuple(halls))
+        return
+
+    
+    def hall_single_click(self, event):
+        idxs = self.hallList.curselection()
+        if(len(idxs) == 0):
+            return
+        gInfo.hall_focus = idxs[0]
+        self.focus_hall = gInfo.hall_list[gInfo.hall_focus]
+        print("hall single click")
+        print(self.focus_hall.name)
+        return
+    
+    def hall_double_click(self, event):
+        idxs = self.hallList.curselection()
+        if(len(idxs) == 0):
+            return
+        gInfo.hall_focus = idxs[0]
+        self.focus_hall = gInfo.hall_list[gInfo.hall_focus]
+        print("hall double click")
+        print(self.focus_hall.name)
+        self.hall_edit()
+        return
+    
+    def hall_add(self):
+        """ add hall """
         dialog = HallDialog(self.root)
-        dialog.open_add(gInfo)
+        dialog.open_add(self)
         return
 
-    def _hall_del(self):
+    def hall_del(self):
+        """ dell hall """
         dialog = HallDialog(self.root)
-        dialog.open_del(gInfo)
+        dialog.open_del(self, self.focus_hall.name)
         return
 
-    def _hall_edit(self):
+    def hall_edit(self):
+        """ edit hall """
         dialog = HallDialog(self.root)
-        dialog.open_edit(gInfo)
+        dialog.open_edit(self)
+        return
+
+    def hall_add_confirm(self, hall):
+        print hall.name
+        hall.id = gInfo.db_hall.add(gInfo.db.conn, hall)
+        gInfo.hall_list.append(hall);
+        self.hall_list_update()
+        return
+
+    def hall_edit_comfirm(self, hall):
+        if(len(gInfo.hall_list) == 0 or gInfo.hall_focus == -1):
+            return
+        
+        hall_old = gInfo.movie_list[gInfo.hall_focus]
+        hall.id = hall_old.id
+        gInfo.db_hall.edit(gInfo.db.conn, hall)
+        gInfo.hall_list[gInfo.hall_focus] = hall
+        self.hall_list_update()
+        return
+
+    def hall_del_confirm(self):
+        if(len(gInfo.hall_list) == 0 or gInfo.hall_focus == -1):
+            return
+        
+        hall_del = gInfo.hall_list[gInfo.hall_focus]
+        gInfo.db_hall.delete(gInfo.db.conn, hall_del)
+        gInfo.hall_list.pop(gInfo.hall_focus)
+
+        last = len(gInfo.hall_list) - 1
+        
+        if(gInfo.hall_focus > last):
+            gInfo.hall_focus = last
+        self.hall_list_update()        
         return
 
     def _day_click(self):
@@ -304,26 +440,27 @@ class CMApp(tk.Frame):
 
     def _year_minus(self):
         gInfo.year_minus()
-        self.update_week_list()
+        self.week_list_update()
         return
 
     def _year_plus(self):
         gInfo.year_plus()
-        self.update_week_list()
+        self.week_list_update()
         return
     
     def _month_minus(self):
         gInfo.month_minus()
-        self.update_week_list()
+        self.week_list_update()
         return
     
     def _month_plus(self):
         gInfo.month_plus()
-        self.update_week_list()
-        return    
+        self.week_list_update()
+        return
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = CMApp(root)
+    #uthread = thread.start_new_thread(app.week_now_update, ())
     root.mainloop()
-    root.destroy()
+    #uthread.exit()
