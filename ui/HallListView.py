@@ -43,7 +43,6 @@ class CMHallListView():
         self.hallStrVar.set(tuple(halls))
         return
 
-    
     def hall_single_click(self, event):
         idxs = self.hallList.curselection()
         if(len(idxs) == 0):
@@ -80,7 +79,7 @@ class CMHallListView():
     def hall_edit(self):
         """ edit hall """
         dialog = HallDialog(self.root)
-        dialog.open_edit(self)
+        dialog.open_edit(self, self.focus_hall.name)
         return
 
     def hall_add_confirm(self, hall):

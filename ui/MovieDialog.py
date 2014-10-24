@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import Tkinter as tk
-from CMGlobal import *
 from CMUtil import *
-from CMMovie import *
 
 MOVIE_DIALOG_ADD = 'add'
 MOVIE_DIALOG_DEL = 'del'
@@ -23,8 +21,6 @@ STR_MOVIE_TITLE_EDIT = u'编辑电影'
 STR_MOVIE_TITLE_DEL = u'删除电影'
 
 class MovieDialog:
-    add_name = ''
-    edit_name = ''
     def __init__(self, parent):
         self.root = parent
         self.top = tk.Toplevel(parent)
@@ -32,7 +28,7 @@ class MovieDialog:
         self.height = 180
         return
 
-    def _ui_init_addedit(self, title, dtype, wmain):
+    def _ui_init_addedit(self, title, dtype, wmain, movie=None):
         self.wmain = wmain
         self.dtype = dtype
         self.title = title
@@ -41,40 +37,53 @@ class MovieDialog:
         self.titleLabel = tk.Label(self.top, text=self.title)
         self.titleLabel.pack(side=tk.TOP)
 
+        self.nameVar = tk.StringVar()
+        self.durationVar = tk.StringVar()
+        self.langVar = tk.StringVar()
+        self.typeVar = tk.StringVar()
+        self.priceVar = tk.StringVar()
+
+        if(movie != None):
+            self.nameVar.set(movie.name)
+            self.durationVar.set(movie.duration)
+            self.langVar.set(movie.lang)
+            self.typeVar.set(movie.type)
+            self.priceVar.set(movie.price)
+            
         self.nameFrame = tk.LabelFrame(self.top)
         self.nameFrame.pack(side=tk.TOP)
         self.nameLabel = tk.Label(self.nameFrame, text=STR_MOVIE_LABEL_NAME)
         self.nameLabel.pack(side=tk.LEFT)
-        self.nameEntryBox = tk.Entry(self.nameFrame)
-        self.nameEntryBox.pack(side=tk.LEFT)
+        self.nameEntry = tk.Entry(self.nameFrame, textvariable=self.nameVar)
+        self.nameEntry.pack(side=tk.LEFT)
 
         self.durationFrame = tk.LabelFrame(self.top)
         self.durationFrame.pack(side=tk.TOP)
         self.durationLabel = tk.Label(self.durationFrame, text=STR_MOVIE_LABEL_DURATION)
         self.durationLabel.pack(side=tk.LEFT)
-        self.durationEntryBox = tk.Entry(self.durationFrame)
-        self.durationEntryBox.pack(side=tk.LEFT)
+        self.durationEntry = tk.Entry(self.durationFrame, textvariable=self.durationVar)
+        self.durationEntry.pack(side=tk.LEFT)
 
         self.langFrame = tk.LabelFrame(self.top)
         self.langFrame.pack(side=tk.TOP)
         self.langLabel = tk.Label(self.langFrame, text=STR_MOVIE_LABEL_LANG)
         self.langLabel.pack(side=tk.LEFT)
-        self.langEntryBox = tk.Entry(self.langFrame)
-        self.langEntryBox.pack(side=tk.LEFT)
-
+        self.langEntry = tk.Entry(self.langFrame, textvariable=self.langVar)
+        self.langEntry.pack(side=tk.LEFT)
+        
         self.typeFrame = tk.LabelFrame(self.top)
         self.typeFrame.pack(side=tk.TOP)
         self.typeLabel = tk.Label(self.typeFrame, text=STR_MOVIE_LABEL_TYPE)
         self.typeLabel.pack(side=tk.LEFT)
-        self.typeEntryBox = tk.Entry(self.typeFrame)
-        self.typeEntryBox.pack(side=tk.LEFT)
-        
+        self.typeEntry = tk.Entry(self.typeFrame, textvariable=self.typeVar)
+        self.typeEntry.pack(side=tk.LEFT)
+
         self.priceFrame = tk.LabelFrame(self.top)        
         self.priceFrame.pack(side=tk.TOP)
         self.priceLabel = tk.Label(self.priceFrame, text=STR_MOVIE_LABEL_PRICE)
         self.priceLabel.pack(side=tk.LEFT)
-        self.priceEntryBox = tk.Entry(self.priceFrame)
-        self.priceEntryBox.pack(side=tk.LEFT)
+        self.priceEntry = tk.Entry(self.priceFrame, textvariable=self.priceVar)
+        self.priceEntry.pack(side=tk.LEFT)
         
         self.lastFrame = tk.LabelFrame(self.top)
         self.lastFrame.pack(side=tk.BOTTOM)
@@ -88,10 +97,9 @@ class MovieDialog:
             self.addButton = tk.Button(self.lastFrame, text=firstText, command=self.edit_confirm)
             self.addButton.pack(side=tk.LEFT)
             
-            
-
         self.cancelButton = tk.Button(self.lastFrame, text=STR_MOVIE_CANCEL, command=self.close)
         self.cancelButton.pack(side=tk.LEFT)
+
         # 窗口居中
         util_center_dialog(self.top, self.root, self.width, self.height)
         return
@@ -121,14 +129,14 @@ class MovieDialog:
     def open_add(self, wmain):
         title = STR_MOVIE_TITLE_ADD
         dtype = MOVIE_DIALOG_ADD
-        self._ui_init_addedit(title, dtype, wmain)
+        self._ui_init_addedit(title, dtype, wmain, None)
         return
 
-    def open_edit(self, wmain):
+    def open_edit(self, wmain, movie=None):
         self.wmain = wmain
         title = STR_MOVIE_TITLE_EDIT
         dtype = MOVIE_DIALOG_EDIT
-        self._ui_init_addedit(title, dtype, wmain)
+        self._ui_init_addedit(title, dtype, wmain, movie)
         return
 
     def open_del(self, wmain, name):
@@ -140,11 +148,11 @@ class MovieDialog:
     def add_confirm(self):
         movie = CMMovie()
         movie.id = -1
-        movie.name = self.nameEntryBox.get()
-        movie.duration = self.durationEntryBox.get()
-        movie.lang = self.langEntryBox.get()
-        movie.type = self.typeEntryBox.get()
-        movie.price = self.priceEntryBox.get()
+        movie.name = self.nameVar.get()
+        movie.duration = self.durationVar.get()
+        movie.lang = self.langVar.get()
+        movie.type = self.typeVar.get()
+        movie.price = self.priceVar.get()
         self.wmain.movie_add_confirm(movie)
         self.top.destroy()
         return
@@ -152,11 +160,11 @@ class MovieDialog:
     def edit_confirm(self):
         movie = CMMovie()
         movie.id = -1
-        movie.name = self.nameEntryBox.get()
-        movie.duration = self.durationEntryBox.get()
-        movie.lang = self.langEntryBox.get()
-        movie.type = self.typeEntryBox.get()
-        movie.price = self.priceEntryBox.get()
+        movie.name = self.nameVar.get()
+        movie.duration = self.durationVar.get()
+        movie.lang = self.langVar.get()
+        movie.type = self.typeVar.get()
+        movie.price = self.priceVar.get()
         self.wmain.movie_edit_confirm(movie)
         self.top.destroy()
         return

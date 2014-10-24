@@ -81,7 +81,7 @@ class CMMovieListView():
             return
         
         dialog = MovieDialog(self.root)
-        dialog.open_edit(self)
+        dialog.open_edit(self, self.focus_movie)
         return
 
     def movie_add_confirm(self, movie):

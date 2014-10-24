@@ -27,7 +27,7 @@ class HallDialog():
         self.height = 150
         return
 
-    def _ui_init_addedit(self, title, dtype, wmain):
+    def _ui_init_addedit(self, title, dtype, wmain, name=None):
         self.wmain = wmain
         self.dtype = HALL_DIALOG_ADD
         self.title = title
@@ -35,13 +35,18 @@ class HallDialog():
         
         self.titleLabel = tk.Label(self.top, text=self.title)
         self.titleLabel.pack(side=tk.TOP)
+        
+        self.nameVar = tk.StringVar()
+        
+        if(name != None):
+            self.nameVar.set(name)
 
         self.nameFrame = tk.LabelFrame(self.top)
         self.nameFrame.pack(side=tk.TOP)
         self.nameLabel = tk.Label(self.nameFrame, text=STR_HALL_LABEL_NAME)
         self.nameLabel.pack(side=tk.LEFT)
-        self.nameEntryBox = tk.Entry(self.nameFrame)
-        self.nameEntryBox.pack(side=tk.LEFT)
+        self.nameEntry = tk.Entry(self.nameFrame, textvariable=self.nameVar)
+        self.nameEntry.pack(side=tk.LEFT)
 
         self.lastFrame = tk.LabelFrame(self.top)
         self.lastFrame.pack(side=tk.BOTTOM)
@@ -90,10 +95,10 @@ class HallDialog():
         self._ui_init_addedit(title, dtype, wmain)
         return
 
-    def open_edit(self, wmain):
+    def open_edit(self, wmain, name=None):
         dtype = HALL_DIALOG_EDIT
         title = STR_HALL_TITLE_EDIT
-        self._ui_init_addedit(title, dtype, wmain)
+        self._ui_init_addedit(title, dtype, wmain, name)
         return
 
     def open_del(self, wmain, name):
@@ -105,7 +110,7 @@ class HallDialog():
     def add_confirm(self):
         hall = CMHall()
         hall.id = -1
-        hall.name = self.nameEntryBox.get()
+        hall.name = self.nameVar.get()
         self.wmain.hall_add_confirm(hall)
         self.top.destroy()
         return
@@ -113,7 +118,7 @@ class HallDialog():
     def edit_confirm(self):
         hall = CMHall()
         hall.id = -1
-        hall.name = self.nameEntryBox.get()
+        hall.name = self.nameVar.get()
         self.wmain.hall_edit_confirm(hall)
         self.top.destroy()
         return
