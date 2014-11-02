@@ -97,7 +97,6 @@ class CMCalenderView():
         return
     
     def week_now_update(self):
-        print('update week now!')
         gInfo.now = datetime.datetime.now()
         self.StrVarNow.set(gInfo.now.ctime())
         self.root.update_idletasks()

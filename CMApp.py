@@ -104,6 +104,4 @@ class CMApp(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     app = CMApp(root)
-    #uthread = thread.start_new_thread(app.week_now_update, ())
     root.mainloop()
-    #uthread.exit()

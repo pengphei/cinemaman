@@ -11,6 +11,7 @@ class CMMoviePlay(object):
         self.startTime = startTime
         self.endTime = endTime
         self.price = price
+        self.restTime = 0
 
         self.hallName = ""
         self.movieName = ""
