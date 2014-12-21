@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
+import datetime
 
 class CMMoviePlay(object):
     """ 电影播放安排 """
@@ -47,15 +48,25 @@ class CMDBMoviePlay(object):
         conn.commit()
         return
 
-    def all(self, conn):
-        list = []
+    def get_by_day_hall(self, conn, sdate, edate, hallid):
+        rlist = []
+        cursor = conn.cursor()
+        start_day = datetime.datetime(sdate.year, sdate.month, sdate.day)
+        end_day = datetime.datetime(edate.year, edate.month, edate.day)
+        cursor.execute(self.CMD_QUERY_DATE_HALL, (start_day, end_day, hallid))
+        for item in cursor.fetchall():
+            play = CMMoviePlay(item[0], item[1], item[2], item[3], item[4], item[5])
+            rlist.append(play)
+        return rlist
+
+    def get_all(self, conn):
+        rlist = []
         cursor = conn.cursor()
         cursor.execute(self.CMD_ALL)
         for item in cursor.fetchall():
-            play = CMMoviePlay(-1, item[1], item[2], item[3], item[4], item[5])
-            play.id = item[0]
-            list.append(play)
-        return list
+            play = CMMoviePlay(item[0], item[1], item[2], item[3], item[4], item[5])
+            rlist.append(play)
+        return rlist
 
     def clear(self, conn):
         pass
@@ -70,8 +81,8 @@ class CMDBMoviePlay(object):
             id integer primary key autoincrement,
             hall_id integer,
             movie_id integer,
-            start_time text,
-            end_time text,
+            start_time timestamp,
+            end_time timestamp,
             price integer
         )
         """
@@ -88,6 +99,10 @@ class CMDBMoviePlay(object):
         update tb_movieplay set hall_id=?, movie_id=?, start_time=?, end_time=?, price=? where id = ?
         """
 
+        self.CMD_QUERY_DATE_HALL = """
+        select * from tb_movieplay where start_time >= ? and start_time < ? and hall_id = ?
+        """
+
         self.CMD_ALL = """
         select * from tb_movieplay
         """
@@ -97,12 +112,12 @@ class CMDBMoviePlay(object):
 
 # for test
 if __name__ == "__main__":
-    m0 = CMMoviePlay(1, 1, "2014-09-12 12:21", "2014-09-12 14:21", 25)
-    m1 = CMMoviePlay(1, 1, "2014-09-12 12:45", "2014-09-12 14:21", 23)
-    m2 = CMMoviePlay(2, 2, "2014-09-12 12:21", "2014-09-12 14:21", 44)
+    m0 = CMMoviePlay(0, 1, 1, datetime.datetime(2014,9,12,12,21), datetime.datetime(2014,9,12,14,21), 25)
+    m1 = CMMoviePlay(0, 1, 1, datetime.datetime(2014,10,12,16,21), datetime.datetime(2014,10,12,18,21), 23)
+    m2 = CMMoviePlay(0, 2, 2, datetime.datetime(2014,10,12,18,21), datetime.datetime(2014,10,12,20,21), 44)
 
     dbPlay = CMDBMoviePlay()
-    conn = sqlite3.connect(":memory:")
+    conn = sqlite3.connect("play.db")
     dbPlay.init(conn)
 
     i = dbPlay.add(conn, m0)
@@ -112,6 +127,7 @@ if __name__ == "__main__":
     mlist = dbPlay.all(conn)
 
     for iplay in mlist:
+        print type(iplay.id), type(iplay.startTime), type(iplay.endTime)
         print iplay.id, iplay.hallID, iplay.movieID, iplay.startTime, iplay.endTime, iplay.price
 
     print("\nedit one item")
@@ -126,8 +142,14 @@ if __name__ == "__main__":
     print("\ndelete one item")
     dbPlay.delete(conn, mlist[0])
 
-    mlist = dbPlay.all(conn)
+    print("\nget all \n")
+    mlist = dbPlay.get_all(conn)
 
     for iplay in mlist:
         print iplay.id, iplay.hallID, iplay.movieID, iplay.startTime, iplay.endTime, iplay.price
 
+    print("\nget date id \n")
+    mlist = dbPlay.get_by_day_hall(conn, datetime.date(2014,10,12), datetime.date(2014,10,13), 1)
+
+    for iplay in mlist:
+        print iplay.id, iplay.hallID, iplay.movieID, iplay.startTime, iplay.endTime, iplay.price

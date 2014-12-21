@@ -41,7 +41,7 @@ class CMDBHall(object):
         conn.commit()
         return
 
-    def all(self, conn):
+    def get_all(self, conn):
         halls = []
         cursor = conn.cursor()
         cursor.execute(self.CMD_ALL)

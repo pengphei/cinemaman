@@ -4,6 +4,7 @@ import Tkinter as tk
 import datetime
 import time
 import thread
+import calendar
 
 from CMApp import *
 
@@ -76,11 +77,13 @@ class CMCalenderView():
             for day_idx in range(7):
                 dayStrVar = tk.StringVar()
                 dayStrVar.set(gInfo.date_list[week_idx*7 + day_idx].day)
-                dayButton = tk.Button(weekFrame, textvariable = dayStrVar, width=5, command=self._day_click)
+                dayButton = tk.Button(weekFrame, textvariable = dayStrVar, width=5)
+                dayButton.bind('<ButtonRelease-1>', self._day_release)
                 dayButton.pack(side=tk.LEFT)
                 self.WeekStrVarList.append(dayStrVar)
                 self.WeekButtonsList.append(dayButton)
 
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='red')
         self.week_now_update()
         return
 
@@ -103,25 +106,38 @@ class CMCalenderView():
         self.parent.after(1000, self.week_now_update)
         return
 
-    def _day_click(self):
+    def _day_release(self, event):
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='black')
+        idx = self.WeekButtonsList.index(event.widget)
+        gInfo.set_focus_index(idx)
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='red')
+        self.root.update_idletasks()
         return
 
     def _year_minus(self):
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='black')
         gInfo.year_minus()
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='red')
         self.week_list_update()
         return
 
     def _year_plus(self):
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='black')
         gInfo.year_plus()
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='red')
         self.week_list_update()
         return
     
     def _month_minus(self):
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='black')
         gInfo.month_minus()
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='red')
         self.week_list_update()
         return
     
     def _month_plus(self):
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='black')
         gInfo.month_plus()
+        self.WeekButtonsList[gInfo.date_list_focus].config(fg='red')
         self.week_list_update()
         return

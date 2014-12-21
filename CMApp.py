@@ -12,10 +12,12 @@ from CMUtil import *
 # dialog import
 from ui.MovieDialog import *
 from ui.HallDialog import *
+from ui.PlayDialog import *
 from ui.PlayListView import *
 from ui.MovieListView import *
 from ui.HallListView import *
 from ui.CalenderView import *
+from ui.ExportToolView import *
 
 ## global config
 gCfg = CMConfig()
@@ -39,6 +41,11 @@ class CMApp(tk.Frame):
         self.movieView = CMMovieListView(self.root, self, 5)
         self.calenderView = CMCalenderView(self.root, self, self.center_width)
         self.playView = CMPlayListView(self.root, self, self.center_width)
+        self.exportView = CMExportToolView(self.root, self, self.center_width)
+        return
+
+    def play_update(self):
+        self.playView.play_list_update()
         return
 
     def _init_data(self):

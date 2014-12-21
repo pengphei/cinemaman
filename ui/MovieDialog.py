@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import Tkinter as tk
+from CMGlobal import *
 from CMUtil import *
 
 MOVIE_DIALOG_ADD = 'add'
