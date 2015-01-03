@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import ttk
 import Tkinter as tk
 import datetime
 import time
@@ -33,15 +34,22 @@ class CMApp(tk.Frame):
     def __init__(self, root=None):
         tk.Frame.__init__(self, root)
         self.root = root
-        # init ui elemets
+        self._setup_widgets()
         self.misc_init()
-        #self.menu_init()
+        return
 
-        self.hallView = CMHallListView(self.root, self, 5)
-        self.movieView = CMMovieListView(self.root, self, 5)
-        self.calenderView = CMCalenderView(self.root, self, self.center_width)
-        self.playView = CMPlayListView(self.root, self, self.center_width)
-        self.exportView = CMExportToolView(self.root, self, self.center_width)
+    def _setup_widgets(self):
+        self.movieView = CMMovieListView(root=self.root, parent=self, width_=5)
+        self.movieView.pack(fill=tk.Y, side=tk.RIGHT)
+        
+        self.hallView = CMHallListView(root=self.root, parent=self, width_=5)
+        self.hallView.pack(fill=tk.Y, side=tk.LEFT)
+        self.calenderView = CMCalenderView(root=self.root, parent=self, width_=self.center_width)
+        self.calenderView.pack(fill=tk.X, side=tk.TOP)
+        self.playView = CMPlayListView(root=self.root, parent=self, width_=self.center_width)
+        self.playView.pack(fill=tk.X, side=tk.TOP)
+        self.exportView = CMExportToolView(root=self.root, parent=self, width_=self.center_width)
+        self.exportView.pack(fill=tk.X, side=tk.TOP)
         return
 
     def play_update(self):
@@ -94,10 +102,7 @@ class CMApp(tk.Frame):
         self.menuBar.add_cascade(label="帮助", menu=self.helpMenu)
         self.master.config(menu=self.menuBar)
         return
-    
-    def _menu_click(self):
-        return
-    
+
     def misc_init(self):
         # title
         self.root.title(u'电影院管理')

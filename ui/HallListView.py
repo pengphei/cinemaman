@@ -1,35 +1,39 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
+import ttk
 
 from CMApp import *
 
-class CMHallListView():
+class CMHallListView(ttk.Frame):
 
-    def __init__(self, root, parent, w):
+    def __init__(self, root, parent, width_):
+        ttk.Frame.__init__(self, parent, class_="CMHallListView", width=width_)
         self.root = root
         self.parent = parent
-        self.hallStrVar = tk.StringVar()
-        self.hallFrame = tk.LabelFrame(self.parent, width = w, borderwidth = 2, bg='light gray')
-        self.hallFrame.pack(fill=tk.Y, side=tk.LEFT)
+        self.width = width_
+        self._setup_widgets()
+        return
 
-        self.hallTitle = tk.Label(self.hallFrame, text = u"电影厅列表", width=w, bg='light gray')
+    def _setup_widgets(self):
+        self.hallStrVar = tk.StringVar()
+
+        self.hallTitle = ttk.Label(self, text = u"电影厅列表", width=self.width)
         self.hallTitle.pack(fill=tk.X, side=tk.TOP)
         
-        self.hallList = tk.Listbox(self.hallFrame, width=w, listvariable=self.hallStrVar, selectmode=tk.SINGLE, bg='light blue')
+        self.hallList = tk.Listbox(self, width=self.width, listvariable=self.hallStrVar, selectmode=tk.SINGLE)
         self.hallList.pack(fill=tk.BOTH, side=tk.TOP)
 
         # hall list key bindings
         self.hallList.bind('<ButtonRelease-1>', self.hall_single_click)
         self.hallList.bind('<Double-ButtonRelease-1>', self.hall_double_click)
         
-        self.hallToolsFrame = tk.LabelFrame(self.hallFrame, width=w, bg='light gray')
+        self.hallToolsFrame = ttk.Frame(self, width=self.width)
         self.hallToolsFrame.pack(fill=tk.Y, side=tk.BOTTOM)
-        self.hallToolAdd = tk.Button(self.hallToolsFrame, text = '添加', command=self.hall_add)
+        self.hallToolAdd = ttk.Button(self.hallToolsFrame, text = '添加', command=self.hall_add)
         self.hallToolAdd.pack(fill=tk.Y, side=tk.LEFT)
-        self.hallToolDel = tk.Button(self.hallToolsFrame, text = '删除', command=self.hall_del)
+        self.hallToolDel = ttk.Button(self.hallToolsFrame, text = '删除', command=self.hall_del)
         self.hallToolDel.pack(fill=tk.Y, side=tk.LEFT)
-        self.hallToolEdit = tk.Button(self.hallToolsFrame, text = '编辑', command=self.hall_edit)
+        self.hallToolEdit = ttk.Button(self.hallToolsFrame, text = '编辑', command=self.hall_edit)
         self.hallToolEdit.pack(fill=tk.Y, side=tk.LEFT)
 
         self.hall_list_update()

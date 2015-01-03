@@ -72,7 +72,8 @@ class CMGlobal(object):
         return
 
     def set_focus_index(self, idx):
-        self.date_focus = self.date_list[idx];
+        self.date_focus = self.date_list[idx]
+        print(self.date_focus)
         self.date_list_focus = idx;
         self.play_list_update()
         return
